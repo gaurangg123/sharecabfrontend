@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
+import { BackButton } from "@/components/back-button"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -40,6 +41,10 @@ export default function ProfilePage() {
 
   return (
     <div className="container max-w-4xl py-10 px-4 md:px-6 space-y-8">
+      <div className="flex items-center justify-between">
+        <BackButton />
+      </div>
+
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
         <p className="text-muted-foreground">Manage your account settings and preferences</p>
@@ -75,23 +80,23 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row gap-4 items-center">
                 <Avatar className="w-20 h-20">
                   <AvatarImage src="/placeholder.svg" alt="Profile" />
-                  <AvatarFallback className="text-lg">JD</AvatarFallback>
+                  <AvatarFallback className="text-lg">RK</AvatarFallback>
                 </Avatar>
                 {isEditing ? (
                   <div className="space-y-2 text-center sm:text-left">
                     <div className="space-y-1">
                       <Label htmlFor="name">Name</Label>
-                      <Input id="name" defaultValue="John Doe" className="max-w-[250px]" />
+                      <Input id="name" defaultValue="Rajesh Kumar" className="max-w-[250px]" />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" defaultValue="john@example.com" className="max-w-[250px]" />
+                      <Input id="email" defaultValue="rajesh.kumar@gmail.com" className="max-w-[250px]" />
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-1 text-center sm:text-left">
-                    <h2 className="text-2xl font-bold">John Doe</h2>
-                    <p className="text-muted-foreground">john@example.com</p>
+                    <h2 className="text-2xl font-bold">Rajesh Kumar</h2>
+                    <p className="text-muted-foreground">rajesh.kumar@gmail.com</p>
                     <div className="flex items-center gap-1 text-sm">
                       <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                       <span className="font-medium">4.8</span>
@@ -116,15 +121,15 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="dob">Date of Birth</Label>
-                      <Input id="dob" defaultValue="01/15/1990" />
+                      <Input id="dob" defaultValue="15/04/1990" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="home">Home Address</Label>
-                      <Input id="home" defaultValue="123 Main St, Apt 4B" />
+                      <Input id="home" defaultValue="123 Sector 18, Noida, UP" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="work">Work Address</Label>
-                      <Input id="work" defaultValue="456 Office Blvd" />
+                      <Input id="work" defaultValue="456 Cyber City, Gurugram, Haryana" />
                     </div>
                   </div>
                 ) : (
@@ -135,20 +140,20 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Date of Birth</div>
-                      <div>01/15/1990</div>
+                      <div>15/04/1990</div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Home Address</div>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3 text-muted-foreground" />
-                        123 Main St, Apt 4B
+                        123 Sector 18, Noida, UP
                       </div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Work Address</div>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3 text-muted-foreground" />
-                        456 Office Blvd
+                        456 Cyber City, Gurugram, Haryana
                       </div>
                     </div>
                   </div>
@@ -161,7 +166,7 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="emergency-name">Name</Label>
-                      <Input id="emergency-name" defaultValue="Jane Doe" />
+                      <Input id="emergency-name" defaultValue="Priya Kumar" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="emergency-relation">Relationship</Label>
@@ -176,7 +181,7 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Name</div>
-                      <div>Jane Doe</div>
+                      <div>Priya Kumar</div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-sm text-muted-foreground">Relationship</div>
@@ -208,7 +213,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="upi-id">UPI ID</Label>
-                      <Input id="upi-id" defaultValue="johndoe@okbank" />
+                      <Input id="upi-id" defaultValue="rajesh@okbank" />
                     </div>
                   </div>
                 ) : (
@@ -232,7 +237,7 @@ export default function ProfilePage() {
                       <div className="text-sm text-muted-foreground">UPI ID</div>
                       <div className="flex items-center gap-1">
                         <Wallet className="h-3 w-3 text-muted-foreground" />
-                        johndoe@okbank
+                        rajesh@okbank
                       </div>
                     </div>
                   </div>
@@ -463,7 +468,7 @@ export default function ProfilePage() {
                         <line x1="10" x2="14" y1="13" y2="13" />
                       </svg>
                       <div>
-                        <div className="font-medium">UPI ID: johndoe@okbank</div>
+                        <div className="font-medium">UPI ID: rajesh@okbank</div>
                         <div className="text-xs text-muted-foreground">Last used on Apr 26, 2024</div>
                       </div>
                     </div>

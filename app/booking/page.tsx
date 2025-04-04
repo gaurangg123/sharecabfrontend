@@ -3,14 +3,13 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { Calendar, CalendarIcon, Clock, MapPin, Navigation, Plus, Minus } from "lucide-react"
+import { Calendar, CalendarIcon, Clock, MapPin, Navigation, Plus, Minus, Car, Bike } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/components/ui/use-toast"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
@@ -18,6 +17,8 @@ import { format } from "date-fns"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Slider } from "@/components/ui/slider"
+import { BackButton } from "@/components/back-button"
 
 export default function BookingPage() {
   const { toast } = useToast()
@@ -27,6 +28,14 @@ export default function BookingPage() {
   const [locationType, setLocationType] = useState<"pickup" | "dropoff">("pickup")
   const [pickupLocation, setPickupLocation] = useState("")
   const [dropoffLocation, setDropoffLocation] = useState("")
+  const [rideType, setRideType] = useState("scheduled")
+  const [vehicleType, setVehicleType] = useState("car")
+
+  // Custom time picker state
+  const [hours, setHours] = useState(8)
+  const [minutes, setMinutes] = useState(0)
+  const [amPm, setAmPm] = useState("AM")
+  const [timePickerOpen, setTimePickerOpen] = useState(false)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -55,8 +64,18 @@ export default function BookingPage() {
     setMapDialogOpen(false)
   }
 
+  const formatTime = () => {
+    const formattedHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours
+    const formattedMinutes = minutes.toString().padStart(2, "0")
+    return `${formattedHours}:${formattedMinutes} ${amPm}`
+  }
+
   return (
     <div className="container max-w-4xl py-10 px-4 md:px-6 space-y-8">
+      <div className="flex items-center justify-between">
+        <BackButton />
+      </div>
+
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Book Your Ride</h1>
         <p className="text-muted-foreground">Schedule your daily commute or book a one-time ride</p>
@@ -133,7 +152,12 @@ export default function BookingPage() {
 
               <div className="space-y-2">
                 <Label>Ride Type</Label>
-                <RadioGroup defaultValue="scheduled" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <RadioGroup
+                  defaultValue="scheduled"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                  value={rideType}
+                  onValueChange={setRideType}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="scheduled" id="scheduled" />
                     <Label htmlFor="scheduled" className="flex items-center">
@@ -157,44 +181,140 @@ export default function BookingPage() {
                 </RadioGroup>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date">Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <CalendarComponent mode="single" selected={date} onSelect={setDate} initialFocus />
-                    </PopoverContent>
-                  </Popover>
+              {rideType === "scheduled" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? format(date, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent mode="single" selected={date} onSelect={setDate} initialFocus />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Time</Label>
+                    <Popover open={timePickerOpen} onOpenChange={setTimePickerOpen}>
+                      <PopoverTrigger asChild>
+                        <Button variant={"outline"} className="w-full justify-start text-left font-normal">
+                          <Clock className="mr-2 h-4 w-4" />
+                          {formatTime()}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 p-4">
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Hours</Label>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">1</span>
+                              <Slider
+                                value={[hours]}
+                                min={1}
+                                max={12}
+                                step={1}
+                                onValueChange={(value) => setHours(value[0])}
+                                className="flex-1 mx-4"
+                              />
+                              <span className="text-sm text-muted-foreground">12</span>
+                            </div>
+                            <div className="text-center font-medium">{hours}</div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Minutes</Label>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">0</span>
+                              <Slider
+                                value={[minutes]}
+                                min={0}
+                                max={59}
+                                step={1}
+                                onValueChange={(value) => setMinutes(value[0])}
+                                className="flex-1 mx-4"
+                              />
+                              <span className="text-sm text-muted-foreground">59</span>
+                            </div>
+                            <div className="text-center font-medium">{minutes.toString().padStart(2, "0")}</div>
+                          </div>
+
+                          <div className="flex justify-center gap-2">
+                            <Button
+                              variant={amPm === "AM" ? "default" : "outline"}
+                              onClick={() => setAmPm("AM")}
+                              type="button"
+                            >
+                              AM
+                            </Button>
+                            <Button
+                              variant={amPm === "PM" ? "default" : "outline"}
+                              onClick={() => setAmPm("PM")}
+                              type="button"
+                            >
+                              PM
+                            </Button>
+                          </div>
+
+                          <Button className="w-full" onClick={() => setTimePickerOpen(false)} type="button">
+                            Confirm
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="time">Time</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="7:00">7:00 AM</SelectItem>
-                      <SelectItem value="7:30">7:30 AM</SelectItem>
-                      <SelectItem value="8:00">8:00 AM</SelectItem>
-                      <SelectItem value="8:30">8:30 AM</SelectItem>
-                      <SelectItem value="9:00">9:00 AM</SelectItem>
-                      <SelectItem value="17:00">5:00 PM</SelectItem>
-                      <SelectItem value="17:30">5:30 PM</SelectItem>
-                      <SelectItem value="18:00">6:00 PM</SelectItem>
-                      <SelectItem value="18:30">6:30 PM</SelectItem>
-                      <SelectItem value="19:00">7:00 PM</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Vehicle Type</Label>
+                <RadioGroup
+                  defaultValue="car"
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  value={vehicleType}
+                  onValueChange={setVehicleType}
+                >
+                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                    <RadioGroupItem value="bike" id="bike" className="absolute right-2 top-2" />
+                    <Bike className="h-8 w-8 mb-2" />
+                    <div className="font-medium">2 Wheeler</div>
+                    <div className="text-xs text-muted-foreground mt-1">Fastest & Affordable</div>
+                  </div>
+                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                    <RadioGroupItem value="auto" id="auto" className="absolute right-2 top-2" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mb-2"
+                    >
+                      <path d="M5 17h2a2 2 0 1 0 4 0H5Z" />
+                      <path d="M9 17h6a2 2 0 1 0 4 0h1a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4h-6.5a4 4 0 0 0-3.5 2L5 13v4h4Z" />
+                      <path d="M7 14h12" />
+                      <path d="M5 9h14" />
+                    </svg>
+                    <div className="font-medium">Auto Rickshaw</div>
+                    <div className="text-xs text-muted-foreground mt-1">Budget Friendly</div>
+                  </div>
+                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                    <RadioGroupItem value="car" id="car" className="absolute right-2 top-2" />
+                    <Car className="h-8 w-8 mb-2" />
+                    <div className="font-medium">4 Wheeler</div>
+                    <div className="text-xs text-muted-foreground mt-1">Comfortable & Spacious</div>
+                  </div>
+                </RadioGroup>
               </div>
 
               <div className="space-y-2">
