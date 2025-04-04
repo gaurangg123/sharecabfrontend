@@ -7,14 +7,20 @@ import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { BackButton } from "@/components/back-button"
+import { Container } from "@/components/ui/container"
 
 export default function SubscriptionPlansPage() {
   const [billingCycle, setBillingCycle] = useState("monthly")
 
   return (
-    <div className="container max-w-5xl py-10 px-4 md:px-6 space-y-8">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Subscription Plans</h1>
+    <Container size="lg" className="py-6 md:py-10">
+      <div className="mb-4">
+        <BackButton />
+      </div>
+
+      <div className="space-y-2 text-center mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Subscription Plans</h1>
         <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
           Choose the perfect plan for your daily commute
         </p>
@@ -29,7 +35,7 @@ export default function SubscriptionPlansPage() {
 
           <TabsContent value="weekly" className="mt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              <Card>
+              <Card className="border shadow-sm">
                 <CardHeader className="text-center">
                   <CardTitle className="text-lg">Weekly Standard</CardTitle>
                   <div className="text-4xl font-bold">₹1,999</div>
@@ -244,7 +250,7 @@ export default function SubscriptionPlansPage() {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   )
 }
 

@@ -3,7 +3,20 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { Calendar, CalendarIcon, Clock, MapPin, Navigation, Plus, Minus, Car, Bike } from "lucide-react"
+import {
+  Calendar,
+  CalendarIcon,
+  Clock,
+  MapPin,
+  Navigation,
+  Plus,
+  Minus,
+  Car,
+  Bike,
+  Star,
+  Heart,
+  Search,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,6 +32,71 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Slider } from "@/components/ui/slider"
 import { BackButton } from "@/components/back-button"
+import { Container } from "@/components/ui/container"
+
+function GoogleMapComponent({ onLocationSelect, locationType }) {
+  const mapRef = useRef(null)
+  const [mapLoaded, setMapLoaded] = useState(false)
+
+  useEffect(() => {
+    // Simulate map loading
+    const timer = setTimeout(() => {
+      setMapLoaded(true)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handleMapClick = (e) => {
+    // Simulate getting coordinates and address
+    const mockAddress = locationType === "pickup" ? "123 Main St, New Delhi, India" : "456 Market St, New Delhi, India"
+
+    onLocationSelect(mockAddress)
+  }
+
+  return (
+    <div className="w-full h-full relative">
+      {!mapLoaded ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
+          <div className="flex flex-col items-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <p className="mt-2 text-sm text-muted-foreground">Loading map...</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: "url('/placeholder.svg?height=400&width=600')",
+              filter: "grayscale(0.5)",
+            }}
+            onClick={handleMapClick}
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-background/90 p-2 rounded-md text-sm">
+              Click anywhere on the map to select a location
+            </div>
+          </div>
+          <div className="absolute top-4 right-4 z-10">
+            <Button size="sm" variant="outline" className="bg-background/90">
+              <Navigation className="h-4 w-4 mr-2" />
+              Current Location
+            </Button>
+          </div>
+          <div className="absolute bottom-4 right-4 z-10 flex gap-2">
+            <Button size="icon" variant="outline" className="bg-background/90 h-8 w-8">
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="outline" className="bg-background/90 h-8 w-8">
+              <Minus className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default function BookingPage() {
   const { toast } = useToast()
@@ -30,6 +108,14 @@ export default function BookingPage() {
   const [dropoffLocation, setDropoffLocation] = useState("")
   const [rideType, setRideType] = useState("scheduled")
   const [vehicleType, setVehicleType] = useState("car")
+  const [favoriteLocationsOpen, setFavoriteLocationsOpen] = useState(false)
+
+  // Favorite locations
+  const [favoriteLocations, setFavoriteLocations] = useState([
+    { id: 1, name: "Home", address: "123 Sector 18, Noida, UP", type: "home" },
+    { id: 2, name: "Office", address: "456 Cyber City, Gurugram, Haryana", type: "work" },
+    { id: 3, name: "Gym", address: "789 DLF Mall, Saket, New Delhi", type: "other" },
+  ])
 
   // Custom time picker state
   const [hours, setHours] = useState(8)
@@ -70,18 +156,31 @@ export default function BookingPage() {
     return `${formattedHours}:${formattedMinutes} ${amPm}`
   }
 
+  const handleSelectFavorite = (address: string) => {
+    if (locationType === "pickup") {
+      setPickupLocation(address)
+    } else {
+      setDropoffLocation(address)
+    }
+    setFavoriteLocationsOpen(false)
+  }
+
+  const handleVehicleCardClick = (value: string) => {
+    setVehicleType(value)
+  }
+
   return (
-    <div className="container max-w-4xl py-10 px-4 md:px-6 space-y-8">
-      <div className="flex items-center justify-between">
+    <Container size="md" className="py-6 md:py-10">
+      <div className="mb-4">
         <BackButton />
       </div>
 
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Book Your Ride</h1>
+      <div className="space-y-2 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Book Your Ride</h1>
         <p className="text-muted-foreground">Schedule your daily commute or book a one-time ride</p>
       </div>
 
-      <div className="flex items-center justify-center space-x-4">
+      <div className="flex items-center justify-center space-x-4 mb-6">
         <div className="flex items-center justify-center space-x-2">
           <div
             className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
@@ -102,8 +201,8 @@ export default function BookingPage() {
       </div>
 
       {step === 1 ? (
-        <Card>
-          <CardHeader>
+        <Card className="border shadow-sm">
+          <CardHeader className="pb-4">
             <CardTitle>Ride Details</CardTitle>
             <CardDescription>Enter your pickup and drop-off locations</CardDescription>
           </CardHeader>
@@ -124,6 +223,84 @@ export default function BookingPage() {
                         required
                       />
                     </div>
+                    <Popover
+                      open={favoriteLocationsOpen && locationType === "pickup"}
+                      onOpenChange={(open) => {
+                        setLocationType("pickup")
+                        setFavoriteLocationsOpen(open)
+                      }}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button type="button" variant="outline" size="icon">
+                          <Star className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80" align="end">
+                        <div className="space-y-4">
+                          <div className="font-medium">Favorite Locations</div>
+                          <div className="space-y-2">
+                            {favoriteLocations.map((location) => (
+                              <div
+                                key={location.id}
+                                className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer"
+                                onClick={() => handleSelectFavorite(location.address)}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="bg-primary/10 p-2 rounded-full">
+                                    {location.type === "home" ? (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-primary"
+                                      >
+                                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                      </svg>
+                                    ) : location.type === "work" ? (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-primary"
+                                      >
+                                        <rect width="16" height="16" x="4" y="4" rx="2" />
+                                        <rect width="4" height="4" x="10" y="10" rx="1" />
+                                        <path d="M4 16h16" />
+                                        <path d="M4 12h4" />
+                                        <path d="M16 12h4" />
+                                        <path d="M4 8h16" />
+                                      </svg>
+                                    ) : (
+                                      <MapPin className="h-4 w-4 text-primary" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <div className="font-medium">{location.name}</div>
+                                    <div className="text-xs text-muted-foreground">{location.address}</div>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <Heart className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     <Button type="button" variant="outline" size="icon" onClick={() => openMapDialog("pickup")}>
                       <Navigation className="h-4 w-4" />
                     </Button>
@@ -143,6 +320,84 @@ export default function BookingPage() {
                         required
                       />
                     </div>
+                    <Popover
+                      open={favoriteLocationsOpen && locationType === "dropoff"}
+                      onOpenChange={(open) => {
+                        setLocationType("dropoff")
+                        setFavoriteLocationsOpen(open)
+                      }}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button type="button" variant="outline" size="icon">
+                          <Star className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80" align="end">
+                        <div className="space-y-4">
+                          <div className="font-medium">Favorite Locations</div>
+                          <div className="space-y-2">
+                            {favoriteLocations.map((location) => (
+                              <div
+                                key={location.id}
+                                className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer"
+                                onClick={() => handleSelectFavorite(location.address)}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="bg-primary/10 p-2 rounded-full">
+                                    {location.type === "home" ? (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-primary"
+                                      >
+                                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                      </svg>
+                                    ) : location.type === "work" ? (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-primary"
+                                      >
+                                        <rect width="16" height="16" x="4" y="4" rx="2" />
+                                        <rect width="4" height="4" x="10" y="10" rx="1" />
+                                        <path d="M4 16h16" />
+                                        <path d="M4 12h4" />
+                                        <path d="M16 12h4" />
+                                        <path d="M4 8h16" />
+                                      </svg>
+                                    ) : (
+                                      <MapPin className="h-4 w-4 text-primary" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <div className="font-medium">{location.name}</div>
+                                    <div className="text-xs text-muted-foreground">{location.address}</div>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <Heart className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     <Button type="button" variant="outline" size="icon" onClick={() => openMapDialog("dropoff")}>
                       <Navigation className="h-4 w-4" />
                     </Button>
@@ -195,7 +450,7 @@ export default function BookingPage() {
                           {date ? format(date, "PPP") : "Select date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <CalendarComponent mode="single" selected={date} onSelect={setDate} initialFocus />
                       </PopoverContent>
                     </Popover>
@@ -209,7 +464,7 @@ export default function BookingPage() {
                           {formatTime()}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-80 p-4">
+                      <PopoverContent className="w-80 p-4" align="start">
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <Label>Hours</Label>
@@ -276,17 +531,23 @@ export default function BookingPage() {
                 <Label>Vehicle Type</Label>
                 <RadioGroup
                   defaultValue="car"
-                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-4"
                   value={vehicleType}
                   onValueChange={setVehicleType}
                 >
-                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                  <div
+                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "bike" ? "border-primary bg-primary/5" : ""}`}
+                    onClick={() => handleVehicleCardClick("bike")}
+                  >
                     <RadioGroupItem value="bike" id="bike" className="absolute right-2 top-2" />
                     <Bike className="h-8 w-8 mb-2" />
                     <div className="font-medium">2 Wheeler</div>
                     <div className="text-xs text-muted-foreground mt-1">Fastest & Affordable</div>
                   </div>
-                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                  <div
+                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "auto" ? "border-primary bg-primary/5" : ""}`}
+                    onClick={() => handleVehicleCardClick("auto")}
+                  >
                     <RadioGroupItem value="auto" id="auto" className="absolute right-2 top-2" />
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -308,7 +569,10 @@ export default function BookingPage() {
                     <div className="font-medium">Auto Rickshaw</div>
                     <div className="text-xs text-muted-foreground mt-1">Budget Friendly</div>
                   </div>
-                  <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
+                  <div
+                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "car" ? "border-primary bg-primary/5" : ""}`}
+                    onClick={() => handleVehicleCardClick("car")}
+                  >
                     <RadioGroupItem value="car" id="car" className="absolute right-2 top-2" />
                     <Car className="h-8 w-8 mb-2" />
                     <div className="font-medium">4 Wheeler</div>
@@ -329,8 +593,8 @@ export default function BookingPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
+        <Card className="border shadow-sm">
+          <CardHeader className="pb-4">
             <CardTitle>Select Your Plan</CardTitle>
             <CardDescription>Choose a subscription plan that fits your needs</CardDescription>
           </CardHeader>
@@ -401,7 +665,7 @@ export default function BookingPage() {
 
               <div className="space-y-4">
                 <div className="text-lg font-semibold">Payment Method</div>
-                <RadioGroup defaultValue="card" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <RadioGroup defaultValue="card" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary">
                     <RadioGroupItem value="card" id="card" className="absolute right-2 top-2" />
                     <svg
@@ -499,14 +763,14 @@ export default function BookingPage() {
 
       {/* Map Dialog */}
       <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
             <DialogTitle>Select {locationType === "pickup" ? "Pickup" : "Drop-off"} Location</DialogTitle>
             <DialogDescription>
               Click on the map to select your {locationType === "pickup" ? "pickup" : "drop-off"} location
             </DialogDescription>
           </DialogHeader>
-          <div className="h-[400px] w-full rounded-md border flex flex-col">
+          <div className="h-[400px] w-full flex flex-col">
             <div className="flex-1 relative">
               <GoogleMapComponent onLocationSelect={handleLocationSelect} locationType={locationType} />
             </div>
@@ -514,17 +778,26 @@ export default function BookingPage() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Selected Location</Label>
-                  <Input
-                    placeholder="Search for a location"
-                    value={locationType === "pickup" ? pickupLocation : dropoffLocation}
-                    onChange={(e) => {
-                      if (locationType === "pickup") {
-                        setPickupLocation(e.target.value)
-                      } else {
-                        setDropoffLocation(e.target.value)
-                      }
-                    }}
-                  />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search for a location"
+                        className="pl-9"
+                        value={locationType === "pickup" ? pickupLocation : dropoffLocation}
+                        onChange={(e) => {
+                          if (locationType === "pickup") {
+                            setPickupLocation(e.target.value)
+                          } else {
+                            setDropoffLocation(e.target.value)
+                          }
+                        }}
+                      />
+                    </div>
+                    <Button variant="outline" size="icon" title="Save as favorite">
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setMapDialogOpen(false)}>
@@ -547,71 +820,7 @@ export default function BookingPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  )
-}
-
-function GoogleMapComponent({ onLocationSelect, locationType }) {
-  const mapRef = useRef(null)
-  const [mapLoaded, setMapLoaded] = useState(false)
-
-  useEffect(() => {
-    // Simulate map loading
-    const timer = setTimeout(() => {
-      setMapLoaded(true)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleMapClick = (e) => {
-    // Simulate getting coordinates and address
-    const mockAddress = locationType === "pickup" ? "123 Main St, New Delhi, India" : "456 Market St, New Delhi, India"
-
-    onLocationSelect(mockAddress)
-  }
-
-  return (
-    <div className="w-full h-full relative">
-      {!mapLoaded ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
-          <div className="flex flex-col items-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            <p className="mt-2 text-sm text-muted-foreground">Loading map...</p>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/placeholder.svg?height=400&width=600')",
-              filter: "grayscale(0.5)",
-            }}
-            onClick={handleMapClick}
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-background/90 p-2 rounded-md text-sm">
-              Click anywhere on the map to select a location
-            </div>
-          </div>
-          <div className="absolute top-4 right-4 z-10">
-            <Button size="sm" variant="outline" className="bg-background/90">
-              <Navigation className="h-4 w-4 mr-2" />
-              Current Location
-            </Button>
-          </div>
-          <div className="absolute bottom-4 right-4 z-10 flex gap-2">
-            <Button size="icon" variant="outline" className="bg-background/90 h-8 w-8">
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="outline" className="bg-background/90 h-8 w-8">
-              <Minus className="h-4 w-4" />
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+    </Container>
   )
 }
 

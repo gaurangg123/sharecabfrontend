@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
 import { BackButton } from "@/components/back-button"
+import { Container } from "@/components/ui/container"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -40,34 +41,36 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container max-w-4xl py-10 px-4 md:px-6 space-y-8">
-      <div className="flex items-center justify-between">
+    <Container size="md" className="py-6 md:py-10">
+      <div className="mb-4">
         <BackButton />
       </div>
 
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+      <div className="space-y-2 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">My Profile</h1>
         <p className="text-muted-foreground">Manage your account settings and preferences</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="rides">Rides</TabsTrigger>
-          <TabsTrigger value="subscription">Subscription</TabsTrigger>
-          <TabsTrigger value="payment" className="hidden md:inline-flex">
-            Payment
-          </TabsTrigger>
-          <TabsTrigger value="ratings" className="hidden md:inline-flex">
-            Ratings
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="hidden md:inline-flex">
-            Settings
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4">
+          <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full min-w-[500px] md:min-w-0">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="rides">Rides</TabsTrigger>
+            <TabsTrigger value="subscription">Subscription</TabsTrigger>
+            <TabsTrigger value="payment" className="hidden md:inline-flex">
+              Payment
+            </TabsTrigger>
+            <TabsTrigger value="ratings" className="hidden md:inline-flex">
+              Ratings
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="hidden md:inline-flex">
+              Settings
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="profile" className="space-y-6">
-          <Card>
+          <Card className="border shadow-sm">
             <CardHeader className="relative pb-0">
               <Button
                 variant="ghost"
@@ -775,7 +778,7 @@ export default function ProfilePage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </Container>
   )
 }
 

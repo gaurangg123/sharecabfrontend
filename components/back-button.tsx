@@ -11,7 +11,7 @@ export function BackButton() {
     <Button
       variant="ghost"
       size="sm"
-      className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+      className="flex items-center gap-1 text-muted-foreground hover:text-foreground p-0 h-8"
       onClick={() => router.back()}
     >
       <ArrowLeft className="h-4 w-4" />

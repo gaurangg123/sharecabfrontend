@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Loader2, Phone } from "lucide-react"
+import { Loader2, Phone } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BackButton } from "@/components/back-button"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -81,14 +82,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
-      <Link
-        href="/"
-        className="absolute top-4 left-4 flex items-center text-sm text-muted-foreground hover:text-primary"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Home
-      </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
+      <div className="absolute top-4 left-4">
+        <BackButton />
+      </div>
 
       <Card className="w-full max-w-md mx-auto animate-fadeIn">
         <CardHeader className="space-y-1">

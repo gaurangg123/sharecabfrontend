@@ -1,8 +1,15 @@
+import { BackButton } from "@/components/back-button"
+import { Container } from "@/components/ui/container"
+
 export default function TermsPage() {
   return (
-    <div className="container max-w-4xl py-10 px-4 md:px-6 space-y-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>
+    <Container size="md" className="py-6 md:py-10">
+      <div className="mb-4">
+        <BackButton />
+      </div>
+
+      <div className="space-y-2 mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Terms of Service</h1>
         <p className="text-muted-foreground">Last updated: May 1, 2024</p>
       </div>
 
@@ -114,7 +121,7 @@ export default function TermsPage() {
           <p>If you have any questions about these Terms, please contact us at support@sharecab.com.</p>
         </section>
       </div>
-    </div>
+    </Container>
   )
 }
 
