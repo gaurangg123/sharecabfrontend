@@ -27,6 +27,7 @@ import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
 import { BackButton } from "@/components/back-button"
 import { Container } from "@/components/ui/container"
+import Link from "next/link"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -749,25 +750,111 @@ export default function ProfilePage() {
               <CardDescription>Manage your account security and data privacy</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full justify-between">
-                Change Password
-                <ChevronRight className="h-4 w-4" />
+              <Button variant="outline" className="w-full justify-between" asChild>
+                <Link href="/profile/change-password">
+                  Change Password
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-between">
-                Two-Factor Authentication
-                <Badge variant="outline" className="ml-2">
-                  Off
-                </Badge>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" className="w-full justify-between">
-                Privacy Settings
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" className="w-full justify-between">
-                Download My Data
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <div className="space-y-4">
+                <div className="font-medium">Two-Factor Authentication</div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between border rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-primary"
+                        >
+                          <path d="M2 16V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Z" />
+                          <path d="M6 12h12" />
+                          <path d="M12 16V8" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-medium">SMS/Email OTP</div>
+                        <div className="text-xs text-muted-foreground">Receive a code via SMS or email</div>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Setup
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between border rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-primary"
+                        >
+                          <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                          <circle cx="12" cy="14" r="4" />
+                          <path d="M12 6h.01" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-medium">Authenticator App</div>
+                        <div className="text-xs text-muted-foreground">
+                          Use an authenticator app like Google Authenticator
+                        </div>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Setup
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between border rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-primary"
+                        >
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-medium">Voice Call Verification</div>
+                        <div className="text-xs text-muted-foreground">
+                          Receive an automated call with a verification code
+                        </div>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Setup
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </CardContent>
             <CardFooter>
               <Button variant="destructive" className="w-full">

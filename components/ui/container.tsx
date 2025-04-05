@@ -4,19 +4,20 @@ import { cn } from "@/lib/utils"
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
   size?: "sm" | "md" | "lg" | "xl" | "full"
+  fluid?: boolean
 }
 
-export function Container({ children, className, size = "lg", ...props }: ContainerProps) {
+export function Container({ children, className, size = "lg", fluid = false, ...props }: ContainerProps) {
   return (
     <div
       className={cn(
-        "mx-auto w-full px-4 sm:px-6",
+        fluid ? "container-fluid" : "container mx-auto w-full px-4 sm:px-6",
         {
-          "max-w-screen-sm": size === "sm",
-          "max-w-screen-md": size === "md",
-          "max-w-screen-lg": size === "lg",
-          "max-w-screen-xl": size === "xl",
-          "max-w-none": size === "full",
+          "max-w-screen-sm": size === "sm" && !fluid,
+          "max-w-screen-md": size === "md" && !fluid,
+          "max-w-screen-lg": size === "lg" && !fluid,
+          "max-w-screen-xl": size === "xl" && !fluid,
+          "max-w-none": size === "full" || fluid,
         },
         className,
       )}

@@ -17,6 +17,7 @@ import {
   Heart,
   Search,
 } from "lucide-react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -98,6 +99,59 @@ function GoogleMapComponent({ onLocationSelect, locationType }) {
   )
 }
 
+// Vehicle type option component
+const VehicleTypeOption = ({ id, icon: Icon, title, description, selected, onSelect }) => {
+  return (
+    <div
+      className={`relative rounded-lg border p-4 flex flex-col items-center text-center cursor-pointer transition-all duration-200 ${
+        selected ? "border-primary bg-primary/5" : "hover:border-primary/50"
+      }`}
+      onClick={() => onSelect(id)}
+    >
+      {Icon === "auto" ? (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="mb-2"
+        >
+          <path d="M5 17h2a2 2 0 1 0 4 0H5Z" />
+          <path d="M9 17h6a2 2 0 1 0 4 0h1a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4h-6.5a4 4 0 0 0-3.5 2L5 13v4h4Z" />
+          <path d="M7 14h12" />
+          <path d="M5 9h14" />
+        </svg>
+      ) : (
+        <Icon className="h-8 w-8 mb-2" />
+      )}
+      <div className="font-medium">{title}</div>
+      <div className="text-xs text-muted-foreground mt-1">{description}</div>
+      <input
+        type="radio"
+        name="vehicleType"
+        id={id}
+        className="sr-only"
+        checked={selected}
+        onChange={() => onSelect(id)}
+      />
+      <div
+        className={`absolute right-2 top-2 size-4 rounded-full border ${selected ? "bg-primary border-primary" : "border-muted-foreground"}`}
+      >
+        {selected && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="size-2 rounded-full bg-white"></div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function BookingPage() {
   const { toast } = useToast()
   const [date, setDate] = useState<Date>()
@@ -165,10 +219,6 @@ export default function BookingPage() {
     setFavoriteLocationsOpen(false)
   }
 
-  const handleVehicleCardClick = (value: string) => {
-    setVehicleType(value)
-  }
-
   return (
     <Container size="md" className="py-6 md:py-10">
       <div className="mb-4">
@@ -202,11 +252,11 @@ export default function BookingPage() {
 
       {step === 1 ? (
         <Card className="border shadow-sm">
-          <CardHeader className="pb-4">
+          <CardHeader className="pb-4 md:pb-6">
             <CardTitle>Ride Details</CardTitle>
             <CardDescription>Enter your pickup and drop-off locations</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -529,56 +579,32 @@ export default function BookingPage() {
 
               <div className="space-y-2">
                 <Label>Vehicle Type</Label>
-                <RadioGroup
-                  defaultValue="car"
-                  className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                  value={vehicleType}
-                  onValueChange={setVehicleType}
-                >
-                  <div
-                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "bike" ? "border-primary bg-primary/5" : ""}`}
-                    onClick={() => handleVehicleCardClick("bike")}
-                  >
-                    <RadioGroupItem value="bike" id="bike" className="absolute right-2 top-2" />
-                    <Bike className="h-8 w-8 mb-2" />
-                    <div className="font-medium">2 Wheeler</div>
-                    <div className="text-xs text-muted-foreground mt-1">Fastest & Affordable</div>
-                  </div>
-                  <div
-                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "auto" ? "border-primary bg-primary/5" : ""}`}
-                    onClick={() => handleVehicleCardClick("auto")}
-                  >
-                    <RadioGroupItem value="auto" id="auto" className="absolute right-2 top-2" />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="mb-2"
-                    >
-                      <path d="M5 17h2a2 2 0 1 0 4 0H5Z" />
-                      <path d="M9 17h6a2 2 0 1 0 4 0h1a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4h-6.5a4 4 0 0 0-3.5 2L5 13v4h4Z" />
-                      <path d="M7 14h12" />
-                      <path d="M5 9h14" />
-                    </svg>
-                    <div className="font-medium">Auto Rickshaw</div>
-                    <div className="text-xs text-muted-foreground mt-1">Budget Friendly</div>
-                  </div>
-                  <div
-                    className={`relative rounded-lg border p-4 flex flex-col items-center text-center hover:border-primary cursor-pointer ${vehicleType === "car" ? "border-primary bg-primary/5" : ""}`}
-                    onClick={() => handleVehicleCardClick("car")}
-                  >
-                    <RadioGroupItem value="car" id="car" className="absolute right-2 top-2" />
-                    <Car className="h-8 w-8 mb-2" />
-                    <div className="font-medium">4 Wheeler</div>
-                    <div className="text-xs text-muted-foreground mt-1">Comfortable & Spacious</div>
-                  </div>
-                </RadioGroup>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <VehicleTypeOption
+                    id="bike"
+                    icon={Bike}
+                    title="2 Wheeler"
+                    description="Fastest & Affordable"
+                    selected={vehicleType === "bike"}
+                    onSelect={() => setVehicleType("bike")}
+                  />
+                  <VehicleTypeOption
+                    id="auto"
+                    icon="auto"
+                    title="Auto Rickshaw"
+                    description="Budget Friendly"
+                    selected={vehicleType === "auto"}
+                    onSelect={() => setVehicleType("auto")}
+                  />
+                  <VehicleTypeOption
+                    id="car"
+                    icon={Car}
+                    title="4 Wheeler"
+                    description="Comfortable & Spacious"
+                    selected={vehicleType === "car"}
+                    onSelect={() => setVehicleType("car")}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -594,11 +620,11 @@ export default function BookingPage() {
         </Card>
       ) : (
         <Card className="border shadow-sm">
-          <CardHeader className="pb-4">
+          <CardHeader className="pb-4 md:pb-6">
             <CardTitle>Select Your Plan</CardTitle>
             <CardDescription>Choose a subscription plan that fits your needs</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <Tabs defaultValue="weekly">
                 <TabsList className="grid w-full grid-cols-2">
@@ -748,15 +774,21 @@ export default function BookingPage() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <Button type="button" variant="outline" onClick={() => setStep(1)}>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-full sm:w-auto">
                   Back
                 </Button>
-                <Button type="submit" className="flex-1">
+                <Button type="submit" className="w-full sm:flex-1">
                   Confirm & Pay
                 </Button>
               </div>
             </form>
+            <div className="text-center mt-4 text-sm text-muted-foreground">
+              <span>Already have an ongoing ride? </span>
+              <Link href="/rides" className="text-primary hover:underline">
+                Track your ride
+              </Link>
+            </div>
           </CardContent>
         </Card>
       )}

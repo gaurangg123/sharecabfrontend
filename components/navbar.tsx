@@ -38,6 +38,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/booking", label: "Book Ride" },
+    { href: "/rides", label: "My Rides" },
     { href: "/subscription-plans", label: "Plans" },
     { href: "/profile", label: "Profile" },
   ]
