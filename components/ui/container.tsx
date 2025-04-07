@@ -19,7 +19,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "w-full px-4 sm:px-6",
+        "w-full px-4 sm:px-6 lg:px-8",
         {
           "container mx-auto": !fluid && centered,
           "max-w-screen-sm": size === "sm" && !fluid,
