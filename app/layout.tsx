@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <Navbar />
-          <div className="flex-1 flex flex-col">{children}</div>
+          <div className="flex-1 flex flex-col w-full max-w-full">{children}</div>
           <Toaster />
         </ThemeProvider>
       </body>

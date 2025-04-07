@@ -49,7 +49,7 @@ export function Navbar() {
         isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : "bg-background"
       }`}
     >
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="w-full flex h-16 items-center justify-between px-4 md:px-6 lg:px-8 max-w-[1536px] mx-auto">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-bold text-xl">ShareCab</span>

@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <Container>
+        <Container size="full">
           <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-            <div className="flex flex-col items-center space-y-4 text-center">
+            <div className="flex flex-col items-center space-y-4 text-center max-w-[1280px] mx-auto">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
                   Ride Together, Save Together
@@ -33,7 +33,7 @@ export default function Home() {
             </div>
           </section>
           <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center max-w-[1280px] mx-auto">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">How It Works</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
@@ -70,7 +70,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center max-w-[1280px] mx-auto">
               <Link href="/subscription-plans" prefetch={false}>
                 <Button variant="outline" className="px-6">
                   View Subscription Plans
@@ -82,8 +82,8 @@ export default function Home() {
         </Container>
       </main>
       <footer className="border-t py-6 md:py-0">
-        <Container>
-          <div className="flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+        <Container size="full">
+          <div className="flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row max-w-[1280px] mx-auto">
             <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
               © 2024 ShareCab. All rights reserved.
             </p>
