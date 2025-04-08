@@ -50,7 +50,7 @@ export function Navbar() {
         isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : "bg-background"
       }`}
     >
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <CabIcon className="h-6 w-6 text-primary" />
@@ -120,4 +120,3 @@ export function Navbar() {
     </header>
   )
 }
-

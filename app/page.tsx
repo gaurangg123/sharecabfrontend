@@ -17,10 +17,10 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <Badge className="mb-4">Premium Cab Service</Badge>
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
                   Ride Together, <span className="text-primary">Save Together</span>
                 </h1>
-                <p className="text-xl text-muted-foreground">
+                <p className="text-lg md:text-xl text-muted-foreground max-w-[600px]">
                   Subscribe to our shared cab service and enjoy reliable, affordable, and eco-friendly transportation
                   every day.
                 </p>
@@ -73,7 +73,7 @@ export default function Home() {
           <Container>
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Why Choose ShareCab?</h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-lg text-muted-foreground">
                 Our subscription-based service offers numerous benefits over traditional ride-hailing
               </p>
             </div>
@@ -113,7 +113,7 @@ export default function Home() {
               ].map((feature, index) => (
                 <Card key={index} className="border-primary/10">
                   <CardContent className="pt-6">
-                    <div className="flex flex-col items-center text-center">
+                    <div className="flex flex-col items-center text-center h-full">
                       <div className="bg-primary/10 p-3 rounded-lg mb-4">{feature.icon}</div>
                       <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                       <p className="text-muted-foreground">{feature.description}</p>
@@ -130,7 +130,7 @@ export default function Home() {
           <Container>
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">How It Works</h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-lg text-muted-foreground">
                 Our subscription-based service is designed to make your daily commute hassle-free
               </p>
             </div>
@@ -187,7 +187,7 @@ export default function Home() {
           <Container>
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">What Our Customers Say</h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-lg text-muted-foreground">
                 Don't just take our word for it - hear from our satisfied customers
               </p>
             </div>
@@ -228,7 +228,7 @@ export default function Home() {
                           />
                         ))}
                     </div>
-                    <blockquote className="text-muted-foreground mb-6">"{testimonial.quote}"</blockquote>
+                    <blockquote className="text-muted-foreground mb-6 line-clamp-4">"{testimonial.quote}"</blockquote>
                     <div className="flex items-center gap-2">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                         {testimonial.name.charAt(0)}
@@ -352,4 +352,3 @@ export default function Home() {
     </div>
   )
 }
-

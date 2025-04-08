@@ -85,4 +85,3 @@ export function SharedRideIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-

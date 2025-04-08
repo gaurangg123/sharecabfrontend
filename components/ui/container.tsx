@@ -21,7 +21,7 @@ export function Container({
       className={cn(
         "w-full px-4 sm:px-6 lg:px-8",
         {
-          "container mx-auto": !fluid && centered,
+          "mx-auto": !fluid && centered,
           "max-w-screen-sm": size === "sm" && !fluid,
           "max-w-screen-md": size === "md" && !fluid,
           "max-w-screen-lg": size === "lg" && !fluid,
@@ -37,4 +37,3 @@ export function Container({
     </div>
   )
 }
-

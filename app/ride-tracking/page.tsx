@@ -37,10 +37,6 @@ export default function RideTrackingPage() {
   ])
   const [newMessage, setNewMessage] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [callDialogOpen, setCallDialogOpen] = useState(false)
-  const [callStatus, setCallStatus] = useState<"connecting" | "ongoing" | "ended">("connecting")
-  const [callDuration, setCallDuration] = useState(0)
-  const [callInterval, setCallIntervalState] = useState<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     // Simulate cab movement
@@ -149,42 +145,6 @@ export default function RideTrackingPage() {
         variant: "destructive",
       })
     }
-  }
-
-  const handleCall = () => {
-    setCallDialogOpen(true)
-
-    // Simulate call connecting
-    setTimeout(() => {
-      setCallStatus("ongoing")
-
-      // Start call timer
-      const interval = setInterval(() => {
-        setCallDuration((prev) => prev + 1)
-      }, 1000)
-
-      setCallIntervalState(interval)
-    }, 2000)
-  }
-
-  const handleEndCall = () => {
-    if (callInterval) {
-      clearInterval(callInterval)
-    }
-    setCallStatus("ended")
-
-    // Close dialog after showing "Call ended" for a moment
-    setTimeout(() => {
-      setCallDialogOpen(false)
-      setCallDuration(0)
-      setCallStatus("connecting")
-    }, 1500)
-  }
-
-  const formatCallDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`
   }
 
   return (
@@ -341,8 +301,10 @@ export default function RideTrackingPage() {
                   <Button size="icon" variant="outline" onClick={() => setChatDialogOpen(true)}>
                     <MessageCircle className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="outline" onClick={handleCall}>
-                    <Phone className="h-4 w-4" />
+                  <Button size="icon" variant="outline" asChild>
+                    <a href="tel:+919876543210">
+                      <Phone className="h-4 w-4" />
+                    </a>
                   </Button>
                 </div>
               </div>
@@ -509,98 +471,6 @@ export default function RideTrackingPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Call Dialog */}
-      <Dialog
-        open={callDialogOpen}
-        onOpenChange={(open) => {
-          if (!open && callInterval) {
-            clearInterval(callInterval)
-            setCallDuration(0)
-            setCallStatus("connecting")
-          }
-          setCallDialogOpen(open)
-        }}
-      >
-        <DialogContent className="sm:max-w-xs text-center p-6">
-          <div className="space-y-6">
-            <div className="mx-auto w-20 h-20 relative">
-              <Avatar className="w-full h-full">
-                <AvatarImage src="/placeholder.svg" alt="Driver" />
-                <AvatarFallback className="text-2xl">DC</AvatarFallback>
-              </Avatar>
-              {callStatus === "connecting" && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-full h-full animate-pulse bg-black/20 rounded-full"></div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <h3 className="font-medium text-lg">Daniel Cooper</h3>
-              <p className="text-sm text-muted-foreground">
-                {callStatus === "connecting"
-                  ? "Connecting..."
-                  : callStatus === "ongoing"
-                    ? formatCallDuration(callDuration)
-                    : "Call ended"}
-              </p>
-            </div>
-
-            <div className="flex justify-center gap-4 pt-4">
-              {callStatus === "ongoing" && (
-                <>
-                  <Button size="icon" variant="outline" className="rounded-full h-12 w-12">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                      <line x1="12" x2="12" y1="19" y2="22" />
-                    </svg>
-                  </Button>
-                  <Button size="icon" variant="destructive" className="rounded-full h-12 w-12" onClick={handleEndCall}>
-                    <Phone className="h-6 w-6 rotate-135" />
-                  </Button>
-                  <Button size="icon" variant="outline" className="rounded-full h-12 w-12">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                  </Button>
-                </>
-              )}
-
-              {callStatus === "connecting" && (
-                <Button size="icon" variant="destructive" className="rounded-full h-12 w-12" onClick={handleEndCall}>
-                  <Phone className="h-6 w-6 rotate-135" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Container>
   )
 }
-
