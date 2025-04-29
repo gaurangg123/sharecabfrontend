@@ -38,7 +38,7 @@ export function Navbar() {
   if (shouldHideNavbar) return null
 
   const navLinks = [
-    { href: "/", label: "Home" },
+    { href: "/home", label: "Home" },
     { href: "/booking", label: "Book Ride" },
     { href: "/rides", label: "My Rides" },
     { href: "/subscription-plans", label: "Plans" },
@@ -54,20 +54,13 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <CabIcon className="h-6 w-6 text-primary" />
+            <CabIcon className="h-6 w-6 text-primary dark:text-yellow-400" />
             <span className="font-bold text-xl">ShareCab</span>
           </Link>
-          <nav className="hidden md:flex gap-6 ml-6">
-            <Link
-              href="/home"
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === "/home" ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              Home
-            </Link>
-            {navLinks.map((link) => (
+          <nav className="hidden md:flex ml-6">
+          <ul className="flex items-center gap-6">
+          {navLinks.map((link) => (
+            
               <Link
                 key={link.href}
                 href={link.href}
@@ -77,6 +70,8 @@ export function Navbar() {
               >
                 {link.label}
               </Link>
+             
+            
             ))}
           </nav>
         </div>
@@ -100,16 +95,8 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link
-                  href="/home"
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary",
-                    pathname === "/home" ? "text-black dark:text-white" : "text-muted-foreground",
-                  )}
-                >
-                  Home
-                </Link>
+              <nav className="flex flex-col mt-8 gap-4">
+                
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -131,6 +118,7 @@ export function Navbar() {
                     <Button className="w-full">Sign Up</Button>
                   </Link>
                 </div>
+             
               </nav>
             </SheetContent>
           </Sheet>
