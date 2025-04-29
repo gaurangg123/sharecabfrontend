@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { CabIcon } from "@/components/icons"
+import { cn } from "@/lib/utils"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -57,6 +58,15 @@ export function Navbar() {
             <span className="font-bold text-xl">ShareCab</span>
           </Link>
           <nav className="hidden md:flex gap-6 ml-6">
+            <Link
+              href="/home"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                pathname === "/home" ? "text-primary" : "text-muted-foreground",
+              )}
+            >
+              Home
+            </Link>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -91,6 +101,15 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right">
               <nav className="flex flex-col gap-4 mt-8">
+                <Link
+                  href="/home"
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    pathname === "/home" ? "text-black dark:text-white" : "text-muted-foreground",
+                  )}
+                >
+                  Home
+                </Link>
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}

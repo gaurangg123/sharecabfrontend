@@ -28,6 +28,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { BackButton } from "@/components/back-button"
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
+import { WhatsAppUpdates } from "@/components/whatsapp-updates"
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -256,6 +257,10 @@ export default function ProfilePage() {
               )}
             </CardFooter>
           </Card>
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Communication Preferences</h2>
+            <WhatsAppUpdates />
+          </div>
         </TabsContent>
 
         <TabsContent value="rides" className="space-y-6">

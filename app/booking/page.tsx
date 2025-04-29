@@ -34,6 +34,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Slider } from "@/components/ui/slider"
 import { BackButton } from "@/components/back-button"
 import { Container } from "@/components/ui/container"
+import { WhatsAppUpdates } from "@/components/whatsapp-updates"
 
 function GoogleMapComponent({ onLocationSelect, locationType }) {
   const mapRef = useRef(null)
@@ -861,6 +862,9 @@ export default function BookingPage() {
             </div>
           </DialogContent>
         </Dialog>
+        <div className="mt-6">
+          <WhatsAppUpdates />
+        </div>
       </div>
     </Container>
   )
