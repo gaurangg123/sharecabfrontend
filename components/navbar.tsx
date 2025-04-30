@@ -37,8 +37,9 @@ export function Navbar() {
 
   if (shouldHideNavbar) return null
 
+  // Updated navigation links with correct paths
   const navLinks = [
-    { href: "/", label: "Home" },
+    { href: "/", label: "Home", exact: true },
     { href: "/booking", label: "Book Ride" },
     { href: "/rides", label: "My Rides" },
     { href: "/subscription-plans", label: "Plans" },
@@ -53,27 +54,24 @@ export function Navbar() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <CabIcon className="h-6 w-6 text-primary" />
+          <Link href="/" className="flex items-center gap-2" aria-label="ShareCab Home">
+            <CabIcon className="h-6 w-6 text-primary" aria-hidden="true" />
             <span className="font-bold text-xl">ShareCab</span>
           </Link>
-          <nav className="hidden md:flex gap-6 ml-6">
-            <Link
-              href="/home"
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === "/home" ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              Home
-            </Link>
+          <nav className="hidden md:flex gap-6 ml-6" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === link.href ? "text-primary" : "text-muted-foreground"
-                }`}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary relative",
+                  (link.exact ? pathname === link.href : pathname.startsWith(link.href))
+                    ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                    : "text-muted-foreground",
+                )}
+                aria-current={
+                  (link.exact ? pathname === link.href : pathname.startsWith(link.href)) ? "page" : undefined
+                }
               >
                 {link.label}
               </Link>
@@ -94,29 +92,26 @@ export function Navbar() {
           </div>
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon">
-                <Menu className="h-5 w-5" />
+              <Button variant="outline" size="icon" aria-label="Menu">
+                <Menu className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link
-                  href="/home"
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-primary",
-                    pathname === "/home" ? "text-black dark:text-white" : "text-muted-foreground",
-                  )}
-                >
-                  Home
-                </Link>
+              <nav className="flex flex-col gap-4 mt-8" aria-label="Mobile Navigation">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      pathname === link.href ? "text-primary" : "text-muted-foreground"
-                    }`}
+                    className={cn(
+                      "text-sm font-medium transition-colors hover:text-primary p-2 rounded-md",
+                      (link.exact ? pathname === link.href : pathname.startsWith(link.href))
+                        ? "text-primary bg-primary/10"
+                        : "text-muted-foreground",
+                    )}
+                    aria-current={
+                      (link.exact ? pathname === link.href : pathname.startsWith(link.href)) ? "page" : undefined
+                    }
                   >
                     {link.label}
                   </Link>

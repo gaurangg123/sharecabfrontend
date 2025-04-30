@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Loader2, Mail, Phone } from "lucide-react"
+import { ArrowLeft, Loader2, Mail, Phone, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,30 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { z } from "zod"
+
+// Define validation schemas
+const emailSchema = z.string().email("Please enter a valid email address")
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+
+const phoneSchema = z
+  .string()
+  .min(10, "Phone number must be at least 10 digits")
+  .regex(/^\+?[0-9\s-()]+$/, "Please enter a valid phone number")
+
+type FormErrors = {
+  name?: string
+  email?: string
+  phone?: string
+  password?: string
+  confirmPassword?: string
+  otp?: string
+}
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -22,69 +46,221 @@ export default function SignUpPage() {
   const [otpSent, setOtpSent] = useState(false)
   const [otpValue, setOtpValue] = useState("")
   const [signupMethod, setSignupMethod] = useState<"email" | "phone">("email")
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    homeAddress: "",
+    workAddress: "",
+    emergencyContact: "",
+  })
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  // Validate form fields
+  const validateField = (field: string, value: string): string | undefined => {
+    try {
+      switch (field) {
+        case "name":
+          if (!value.trim()) return "Name is required"
+          if (value.trim().length < 2) return "Name must be at least 2 characters"
+          return undefined
+        case "email":
+          if (!value.trim()) return "Email is required"
+          emailSchema.parse(value)
+          return undefined
+        case "phone":
+          if (!value.trim()) return "Phone number is required"
+          phoneSchema.parse(value)
+          return undefined
+        case "password":
+          if (!value) return "Password is required"
+          passwordSchema.parse(value)
+          return undefined
+        case "confirmPassword":
+          if (!value) return "Please confirm your password"
+          if (value !== formData.password) return "Passwords do not match"
+          return undefined
+        case "otp":
+          if (!value) return "OTP is required"
+          if (value.length !== 6) return "OTP must be 6 digits"
+          return undefined
+        default:
+          return undefined
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return error.errors[0].message
+      }
+      return "Invalid input"
+    }
+  }
+
+  const validateStep1 = (): boolean => {
+    const newErrors: FormErrors = {}
+
+    if (signupMethod === "email") {
+      newErrors.name = validateField("name", formData.name)
+      newErrors.email = validateField("email", formData.email)
+      newErrors.password = validateField("password", formData.password)
+      newErrors.confirmPassword = validateField("confirmPassword", formData.confirmPassword)
+    } else {
+      newErrors.name = validateField("name", formData.name)
+      newErrors.phone = validateField("phone", formData.phone)
+      if (otpSent) {
+        if (!otpValue) newErrors.otp = "OTP is required"
+        else if (otpValue.length !== 6) newErrors.otp = "OTP must be 6 digits"
+      }
+    }
+
+    setErrors(newErrors)
+    return !Object.values(newErrors).some(Boolean)
+  }
 
   const handleNextStep = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setStep(2)
+
+    if (validateStep1()) {
+      setStep(2)
+      window.scrollTo(0, 0)
+    }
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    // Validate step 2 fields if needed
+    // For now, we'll just proceed with submission
+
     setIsLoading(true)
 
-    // Simulate registration delay
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Simulate registration delay
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
       toast({
         title: "Account created successfully!",
         description: "Welcome to ShareCab. Let's book your first ride.",
       })
+
       router.push("/booking")
-    }, 1500)
+    } catch (error) {
+      toast({
+        title: "Registration failed",
+        description: "There was an error creating your account. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleGoogleSignUp = () => {
+  const handleGoogleSignUp = async () => {
     setIsLoading(true)
 
-    // Simulate registration delay
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Simulate OAuth authentication
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
       toast({
         title: "Account created with Google!",
         description: "Welcome to ShareCab. Let's book your first ride.",
       })
+
       router.push("/booking")
-    }, 1500)
+    } catch (error) {
+      toast({
+        title: "Google sign-in failed",
+        description: "There was an error with Google authentication. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleSendOtp = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSendOtp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    // Validate phone number
+    const phoneError = validateField("phone", formData.phone)
+    if (phoneError) {
+      setErrors({ phone: phoneError })
+      return
+    }
+
     setIsLoading(true)
 
-    // Simulate OTP sending delay
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Simulate OTP sending delay
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
       setOtpSent(true)
       toast({
         title: "OTP sent successfully!",
-        description: "Please check your phone/email for the verification code.",
+        description: "Please check your phone for the verification code.",
       })
-    }, 1500)
+    } catch (error) {
+      toast({
+        title: "Failed to send OTP",
+        description: "There was an error sending the verification code. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleVerifyOtp = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleVerifyOtp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    // Validate OTP
+    if (!otpValue) {
+      setErrors({ otp: "OTP is required" })
+      return
+    }
+
+    if (otpValue.length !== 6) {
+      setErrors({ otp: "OTP must be 6 digits" })
+      return
+    }
+
     setIsLoading(true)
 
-    // Simulate OTP verification delay
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Simulate OTP verification delay
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
       setStep(2)
       toast({
         title: "OTP verified successfully!",
         description: "Please complete your profile setup.",
       })
-    }, 1500)
+    } catch (error) {
+      toast({
+        title: "OTP verification failed",
+        description: "The verification code is invalid or has expired. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -124,24 +300,109 @@ export default function SignUpPage() {
                 <form onSubmit={handleNextStep} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="John Doe" required />
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      required
+                    />
+                    {errors.name && (
+                      <p id="name-error" className="text-sm text-destructive mt-1">
+                        {errors.name}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
-                      <Input id="email" type="email" placeholder="name@example.com" className="pl-9" required />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="name@example.com"
+                        className="pl-9"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        aria-invalid={!!errors.email}
+                        aria-describedby={errors.email ? "email-error" : undefined}
+                        required
+                      />
                       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <Mail className="h-4 w-4" />
+                        <Mail className="h-4 w-4" aria-hidden="true" />
                       </div>
                     </div>
+                    {errors.email && (
+                      <p id="email-error" className="text-sm text-destructive mt-1">
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" required />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        aria-invalid={!!errors.password}
+                        aria-describedby={errors.password ? "password-error" : undefined}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {errors.password && (
+                      <p id="password-error" className="text-sm text-destructive mt-1">
+                        {errors.password}
+                      </p>
+                    )}
+                    <div className="text-xs text-muted-foreground">
+                      Password must be at least 8 characters and include uppercase, lowercase, and numbers
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input id="confirmPassword" type="password" required />
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        aria-invalid={!!errors.confirmPassword}
+                        aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <p id="confirm-password-error" className="text-sm text-destructive mt-1">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
                   </div>
                   <Button type="submit" className="w-full">
                     Continue
@@ -154,16 +415,46 @@ export default function SignUpPage() {
                   <form onSubmit={handleSendOtp} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="John Doe" required />
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="John Doe"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        aria-invalid={!!errors.name}
+                        aria-describedby={errors.name ? "name-error" : undefined}
+                        required
+                      />
+                      {errors.name && (
+                        <p id="name-error" className="text-sm text-destructive mt-1">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Mobile Number</Label>
                       <div className="relative">
-                        <Input id="phone" type="tel" placeholder="+91 98765 43210" className="pl-9" required />
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+91 98765 43210"
+                          className="pl-9"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          aria-invalid={!!errors.phone}
+                          aria-describedby={errors.phone ? "phone-error" : undefined}
+                          required
+                        />
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                          <Phone className="h-4 w-4" />
+                          <Phone className="h-4 w-4" aria-hidden="true" />
                         </div>
                       </div>
+                      {errors.phone && (
+                        <p id="phone-error" className="text-sm text-destructive mt-1">
+                          {errors.phone}
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">We'll send a verification code to this number</p>
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
@@ -182,12 +473,21 @@ export default function SignUpPage() {
                       <Label htmlFor="otp">Enter OTP</Label>
                       <Input
                         id="otp"
+                        name="otp"
                         value={otpValue}
-                        onChange={(e) => setOtpValue(e.target.value)}
+                        onChange={(e) => setOtpValue(e.target.value.replace(/[^0-9]/g, ""))}
                         className="text-center text-lg tracking-widest"
                         maxLength={6}
+                        inputMode="numeric"
+                        aria-invalid={!!errors.otp}
+                        aria-describedby={errors.otp ? "otp-error" : undefined}
                         required
                       />
+                      {errors.otp && (
+                        <p id="otp-error" className="text-sm text-destructive mt-1">
+                          {errors.otp}
+                        </p>
+                      )}
                       <div className="flex justify-between items-center">
                         <p className="text-xs text-muted-foreground">OTP sent to your mobile</p>
                         <Button
@@ -264,23 +564,45 @@ export default function SignUpPage() {
                 <Label htmlFor="phone">Phone Number {signupMethod === "phone" && "(Verified)"}</Label>
                 <Input
                   id="phone"
+                  name="phone"
                   type="tel"
                   placeholder="+91 98765 43210"
+                  value={formData.phone}
+                  onChange={handleInputChange}
                   required
                   disabled={signupMethod === "phone"}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Home Address</Label>
-                <Input id="address" placeholder="123 Main St" required />
+                <Label htmlFor="homeAddress">Home Address</Label>
+                <Input
+                  id="homeAddress"
+                  name="homeAddress"
+                  placeholder="123 Main St"
+                  value={formData.homeAddress}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="workAddress">Work/Office Address</Label>
-                <Input id="workAddress" placeholder="456 Office Blvd" />
+                <Input
+                  id="workAddress"
+                  name="workAddress"
+                  placeholder="456 Office Blvd"
+                  value={formData.workAddress}
+                  onChange={handleInputChange}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                <Input id="emergencyContact" placeholder="Emergency contact name & phone" />
+                <Input
+                  id="emergencyContact"
+                  name="emergencyContact"
+                  placeholder="Emergency contact name & phone"
+                  value={formData.emergencyContact}
+                  onChange={handleInputChange}
+                />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
