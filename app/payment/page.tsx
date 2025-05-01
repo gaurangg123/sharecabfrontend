@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Loader2, CreditCard, CheckCircle2, AlertCircle } from "lucide-react"
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, Lock, CreditCardIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -129,14 +129,17 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="container max-w-2xl py-10">
+    <div className="container max-w-2xl py-10 px-4 sm:px-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Payment</h1>
         <p className="text-muted-foreground mt-2">Complete your payment to confirm your ride</p>
       </div>
 
       {paymentResult && (
-        <Alert variant={paymentResult.success ? "default" : "destructive"} className="mb-6">
+        <Alert
+          variant={paymentResult.success ? "default" : "destructive"}
+          className={`mb-6 ${paymentResult.success ? "bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-800" : ""}`}
+        >
           {paymentResult.success ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
           <AlertTitle>{paymentResult.success ? "Payment Successful" : "Payment Failed"}</AlertTitle>
           <AlertDescription>
@@ -147,7 +150,11 @@ export default function PaymentPage() {
               </p>
             )}
             {paymentResult.success && (
-              <Button variant="outline" className="mt-4" onClick={() => router.push("/rides")}>
+              <Button
+                variant="outline"
+                className="mt-4 transition-all duration-200 hover:bg-muted"
+                onClick={() => router.push("/rides")}
+              >
                 View My Rides
               </Button>
             )}
@@ -157,10 +164,17 @@ export default function PaymentPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <Card>
+          <Card className="border border-border/50 transition-all duration-200 hover:shadow-md">
             <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
-              <CardDescription>Enter your card information to complete the payment</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Payment Details</CardTitle>
+                  <CardDescription>Enter your card information to complete the payment</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <CreditCardIcon className="h-6 w-6 text-muted-foreground" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <form id="payment-form" onSubmit={handleSubmit} className="space-y-4">
@@ -171,11 +185,12 @@ export default function PaymentPage() {
                     <Input
                       id="card-number"
                       placeholder="1234 5678 9012 3456"
-                      className="pl-10"
+                      className="pl-10 transition-all duration-200 focus:border-primary"
                       value={cardNumber}
                       onChange={handleCardNumberChange}
                       required
                       disabled={isProcessing}
+                      aria-label="Card number"
                     />
                   </div>
                 </div>
@@ -190,6 +205,8 @@ export default function PaymentPage() {
                       onChange={handleExpiryDateChange}
                       required
                       disabled={isProcessing}
+                      className="transition-all duration-200 focus:border-primary"
+                      aria-label="Expiry date"
                     />
                   </div>
                   <div className="space-y-2">
@@ -202,6 +219,9 @@ export default function PaymentPage() {
                       required
                       maxLength={3}
                       disabled={isProcessing}
+                      className="transition-all duration-200 focus:border-primary"
+                      aria-label="CVV"
+                      type="password"
                     />
                   </div>
                 </div>
@@ -215,12 +235,20 @@ export default function PaymentPage() {
                     onChange={(e) => setName(e.target.value)}
                     required
                     disabled={isProcessing}
+                    className="transition-all duration-200 focus:border-primary"
+                    aria-label="Cardholder name"
                   />
                 </div>
               </form>
             </CardContent>
             <CardFooter>
-              <Button type="submit" form="payment-form" className="w-full" size="lg" disabled={isProcessing}>
+              <Button
+                type="submit"
+                form="payment-form"
+                className="w-full bg-primary hover:bg-primary/90 transition-all duration-200"
+                size="lg"
+                disabled={isProcessing}
+              >
                 {isProcessing ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -235,7 +263,7 @@ export default function PaymentPage() {
         </div>
 
         <div>
-          <Card>
+          <Card className="border border-border/50 transition-all duration-200 hover:shadow-md">
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
@@ -270,6 +298,10 @@ export default function PaymentPage() {
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5" />
                   <div>You will not be charged until you confirm your ride</div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Lock className="h-4 w-4 text-green-500 mt-0.5" />
+                  <div>All transactions are protected with 256-bit SSL encryption</div>
                 </div>
               </div>
             </CardContent>

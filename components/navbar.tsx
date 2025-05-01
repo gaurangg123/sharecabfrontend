@@ -40,7 +40,7 @@ export function Navbar() {
   // Updated navigation links with correct paths
   const navLinks = [
     { href: "/", label: "Home", exact: true },
-    { href: "/booking", label: "Book Ride" },
+    { href: "/book", label: "Book Ride" },
     { href: "/rides", label: "My Rides" },
     { href: "/subscription-plans", label: "Plans" },
     { href: "/profile", label: "Profile" },
@@ -49,12 +49,16 @@ export function Navbar() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : "bg-background"
+        isScrolled ? "bg-background/95 backdrop-blur-md shadow-sm" : "bg-background"
       }`}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2" aria-label="ShareCab Home">
+          <Link
+            href="/"
+            className="flex items-center gap-2 transition-opacity hover:opacity-90"
+            aria-label="ShareCab Home"
+          >
             <CabIcon className="h-6 w-6 text-primary" aria-hidden="true" />
             <span className="font-bold text-xl">ShareCab</span>
           </Link>
@@ -64,7 +68,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary relative",
+                  "text-sm font-medium transition-all duration-200 hover:text-primary relative py-1",
                   (link.exact ? pathname === link.href : pathname.startsWith(link.href))
                     ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
                     : "text-muted-foreground",
@@ -82,17 +86,24 @@ export function Navbar() {
           <ThemeToggle />
           <div className="hidden md:flex gap-2">
             <Link href="/login">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="transition-all duration-200 hover:bg-muted">
                 Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm">Sign Up</Button>
+              <Button size="sm" className="transition-all duration-200 hover:bg-primary/90">
+                Sign Up
+              </Button>
             </Link>
           </div>
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon" aria-label="Menu">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Menu"
+                className="transition-all duration-200 hover:bg-muted"
+              >
                 <Menu className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
@@ -104,7 +115,7 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary p-2 rounded-md",
+                      "text-sm font-medium transition-all duration-200 hover:text-primary p-2 rounded-md",
                       (link.exact ? pathname === link.href : pathname.startsWith(link.href))
                         ? "text-primary bg-primary/10"
                         : "text-muted-foreground",
@@ -118,12 +129,12 @@ export function Navbar() {
                 ))}
                 <div className="flex flex-col gap-2 mt-4">
                   <Link href="/login">
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full transition-all duration-200 hover:bg-muted">
                       Login
                     </Button>
                   </Link>
                   <Link href="/signup">
-                    <Button className="w-full">Sign Up</Button>
+                    <Button className="w-full transition-all duration-200 hover:bg-primary/90">Sign Up</Button>
                   </Link>
                 </div>
               </nav>

@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { format, parseISO } from "date-fns"
-import { Loader2, MapPin, Calendar, Clock, AlertCircle, CheckCircle } from "lucide-react"
+import { Loader2, MapPin, Calendar, Clock, AlertCircle, CheckCircle, Filter, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getRides, cancelRide, type Ride } from "@/lib/api"
 import { useToast } from "@/components/ui/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,6 +21,8 @@ export default function RidesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [cancellingRideId, setCancellingRideId] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterPeriod, setFilterPeriod] = useState("all")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -92,24 +96,82 @@ export default function RidesPage() {
   const getStatusBadge = (status: Ride["status"]) => {
     switch (status) {
       case "scheduled":
-        return <Badge variant="outline">Scheduled</Badge>
+        return (
+          <Badge
+            variant="outline"
+            className="bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-800"
+          >
+            Scheduled
+          </Badge>
+        )
       case "in-progress":
-        return <Badge variant="default">In Progress</Badge>
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 border-green-200 dark:border-green-800">
+            In Progress
+          </Badge>
+        )
       case "completed":
-        return <Badge variant="secondary">Completed</Badge>
+        return (
+          <Badge
+            variant="secondary"
+            className="bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            Completed
+          </Badge>
+        )
       case "cancelled":
-        return <Badge variant="destructive">Cancelled</Badge>
+        return (
+          <Badge
+            variant="destructive"
+            className="bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+          >
+            Cancelled
+          </Badge>
+        )
       default:
         return <Badge variant="outline">{status}</Badge>
     }
   }
 
-  const upcomingRides = rides.filter((ride) => ride.status === "scheduled")
-  const activeRides = rides.filter((ride) => ride.status === "in-progress")
-  const pastRides = rides.filter((ride) => ["completed", "cancelled"].includes(ride.status))
+  // Filter rides based on search term and period
+  const filterRides = (rides: Ride[]) => {
+    return rides.filter((ride) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        ride.pickupLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ride.dropoffLocation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ride.id.toLowerCase().includes(searchTerm.toLowerCase())
+
+      if (!matchesSearch) return false
+
+      if (filterPeriod === "all") return true
+
+      const rideDate = new Date(ride.pickupTime)
+      const now = new Date()
+
+      switch (filterPeriod) {
+        case "today":
+          return rideDate.toDateString() === now.toDateString()
+        case "week":
+          const weekAgo = new Date()
+          weekAgo.setDate(now.getDate() - 7)
+          return rideDate >= weekAgo
+        case "month":
+          const monthAgo = new Date()
+          monthAgo.setMonth(now.getMonth() - 1)
+          return rideDate >= monthAgo
+        default:
+          return true
+      }
+    })
+  }
+
+  const upcomingRides = filterRides(rides.filter((ride) => ride.status === "scheduled"))
+  const activeRides = filterRides(rides.filter((ride) => ride.status === "in-progress"))
+  const pastRides = filterRides(rides.filter((ride) => ["completed", "cancelled"].includes(ride.status)))
 
   return (
-    <div className="container max-w-4xl py-10">
+    <div className="container max-w-4xl py-10 px-4 sm:px-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">My Rides</h1>
         <p className="text-muted-foreground mt-2">View and manage your upcoming, active, and past rides</p>
@@ -121,54 +183,93 @@ export default function RidesPage() {
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             {error}
-            <Button variant="outline" size="sm" className="mt-2" onClick={() => window.location.reload()}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 transition-all duration-200 hover:bg-destructive/10"
+              onClick={() => window.location.reload()}
+            >
               Try Again
             </Button>
           </AlertDescription>
         </Alert>
       )}
 
-      <div className="mb-6">
-        <Button asChild>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <Button asChild className="bg-primary hover:bg-primary/90 transition-all duration-200 w-full sm:w-auto">
           <Link href="/book">Book a New Ride</Link>
         </Button>
+
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search rides..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 w-full sm:w-[200px] transition-all duration-200 focus:border-primary"
+            />
+          </div>
+
+          <Select value={filterPeriod} onValueChange={setFilterPeriod}>
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
+              <SelectValue placeholder="Filter period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All time</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This week</SelectItem>
+              <SelectItem value="month">This month</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <Tabs defaultValue="upcoming">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="upcoming">
+      <Tabs defaultValue="upcoming" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger
+            value="upcoming"
+            className="transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             Upcoming
             {upcomingRides.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 bg-primary-foreground/20 text-primary-foreground">
                 {upcomingRides.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="active">
+          <TabsTrigger
+            value="active"
+            className="transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             Active
             {activeRides.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 bg-primary-foreground/20 text-primary-foreground">
                 {activeRides.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="past">
+          <TabsTrigger
+            value="past"
+            className="transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             Past
             {pastRides.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-2 bg-primary-foreground/20 text-primary-foreground">
                 {pastRides.length}
               </Badge>
             )}
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
-          <TabsContent value="upcoming" className="space-y-4">
+        <div>
+          <TabsContent value="upcoming" className="space-y-4 mt-2">
             {loading ? (
               Array(2)
                 .fill(0)
                 .map((_, i) => (
-                  <Card key={i}>
+                  <Card key={i} className="border border-border/50 overflow-hidden">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between">
                         <Skeleton className="h-4 w-24" />
@@ -203,13 +304,17 @@ export default function RidesPage() {
                   </Card>
                 ))
             ) : upcomingRides.length === 0 ? (
-              <Card>
+              <Card className="border border-border/50">
                 <CardContent className="pt-6 pb-6 text-center">
                   <div className="flex flex-col items-center justify-center space-y-2">
                     <Calendar className="h-8 w-8 text-muted-foreground" />
                     <h3 className="font-medium text-lg">No Upcoming Rides</h3>
-                    <p className="text-muted-foreground">You don't have any upcoming rides scheduled.</p>
-                    <Button asChild className="mt-4">
+                    <p className="text-muted-foreground">
+                      {searchTerm || filterPeriod !== "all"
+                        ? "No rides match your search criteria."
+                        : "You don't have any upcoming rides scheduled."}
+                    </p>
+                    <Button asChild className="mt-4 bg-primary hover:bg-primary/90 transition-all duration-200">
                       <Link href="/book">Book a Ride</Link>
                     </Button>
                   </div>
@@ -217,7 +322,10 @@ export default function RidesPage() {
               </Card>
             ) : (
               upcomingRides.map((ride) => (
-                <Card key={ride.id}>
+                <Card
+                  key={ride.id}
+                  className="border border-border/50 transition-all duration-200 hover:shadow-md hover:border-primary/30"
+                >
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-center">
                       {getStatusBadge(ride.status)}
@@ -230,14 +338,14 @@ export default function RidesPage() {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Pickup</div>
                           <div className="font-medium">{ride.pickupLocation}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Dropoff</div>
                           <div className="font-medium">{ride.dropoffLocation}</div>
@@ -249,13 +357,14 @@ export default function RidesPage() {
                     <div className="flex justify-between w-full">
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
                           <Link href={`/rides/${ride.id}`}>Details</Link>
                         </Button>
                         <Button
                           variant="destructive"
                           onClick={() => handleCancelRide(ride.id)}
                           disabled={cancellingRideId === ride.id}
+                          className="transition-all duration-200 hover:bg-destructive/90"
                         >
                           {cancellingRideId === ride.id ? (
                             <>
@@ -274,9 +383,9 @@ export default function RidesPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="active" className="space-y-4">
+          <TabsContent value="active" className="space-y-4 mt-2">
             {loading ? (
-              <Card>
+              <Card className="border border-border/50 overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between">
                     <Skeleton className="h-4 w-24" />
@@ -310,19 +419,23 @@ export default function RidesPage() {
                 </CardFooter>
               </Card>
             ) : activeRides.length === 0 ? (
-              <Card>
+              <Card className="border border-border/50">
                 <CardContent className="pt-6 pb-6 text-center">
                   <div className="flex flex-col items-center justify-center space-y-2">
                     <Clock className="h-8 w-8 text-muted-foreground" />
                     <h3 className="font-medium text-lg">No Active Rides</h3>
-                    <p className="text-muted-foreground">You don't have any rides in progress at the moment.</p>
+                    <p className="text-muted-foreground">
+                      {searchTerm || filterPeriod !== "all"
+                        ? "No rides match your search criteria."
+                        : "You don't have any rides in progress at the moment."}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
             ) : (
               activeRides.map((ride) => (
-                <Card key={ride.id} className="border-primary">
-                  <CardHeader className="pb-2">
+                <Card key={ride.id} className="border-primary/50 shadow-sm transition-all duration-200 hover:shadow-md">
+                  <CardHeader className="pb-2 bg-primary/5">
                     <div className="flex justify-between items-center">
                       {getStatusBadge(ride.status)}
                       <div className="text-sm text-muted-foreground">Ride #{ride.id.split("-")[1]}</div>
@@ -331,17 +444,17 @@ export default function RidesPage() {
                       {formatDate(ride.pickupTime)} at {formatTime(ride.pickupTime)}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-4">
                     <div className="space-y-4">
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Pickup</div>
                           <div className="font-medium">{ride.pickupLocation}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Dropoff</div>
                           <div className="font-medium">{ride.dropoffLocation}</div>
@@ -353,10 +466,10 @@ export default function RidesPage() {
                     <div className="flex justify-between w-full">
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
-                        <Button asChild>
+                        <Button asChild className="bg-primary hover:bg-primary/90 transition-all duration-200">
                           <Link href={`/rides/${ride.id}/track`}>Track Ride</Link>
                         </Button>
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
                           <Link href={`/rides/${ride.id}`}>Details</Link>
                         </Button>
                       </div>
@@ -367,12 +480,12 @@ export default function RidesPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="past" className="space-y-4">
+          <TabsContent value="past" className="space-y-4 mt-2">
             {loading ? (
               Array(3)
                 .fill(0)
                 .map((_, i) => (
-                  <Card key={i}>
+                  <Card key={i} className="border border-border/50 overflow-hidden">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between">
                         <Skeleton className="h-4 w-24" />
@@ -406,18 +519,25 @@ export default function RidesPage() {
                   </Card>
                 ))
             ) : pastRides.length === 0 ? (
-              <Card>
+              <Card className="border border-border/50">
                 <CardContent className="pt-6 pb-6 text-center">
                   <div className="flex flex-col items-center justify-center space-y-2">
                     <CheckCircle className="h-8 w-8 text-muted-foreground" />
                     <h3 className="font-medium text-lg">No Past Rides</h3>
-                    <p className="text-muted-foreground">You don't have any completed or cancelled rides yet.</p>
+                    <p className="text-muted-foreground">
+                      {searchTerm || filterPeriod !== "all"
+                        ? "No rides match your search criteria."
+                        : "You don't have any completed or cancelled rides yet."}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
             ) : (
               pastRides.map((ride) => (
-                <Card key={ride.id}>
+                <Card
+                  key={ride.id}
+                  className="border border-border/50 transition-all duration-200 hover:shadow-md hover:border-primary/30"
+                >
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-center">
                       {getStatusBadge(ride.status)}
@@ -430,14 +550,14 @@ export default function RidesPage() {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Pickup</div>
                           <div className="font-medium">{ride.pickupLocation}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                        <MapPin className="h-4 w-4 text-primary mt-1" />
                         <div>
                           <div className="text-sm text-muted-foreground">Dropoff</div>
                           <div className="font-medium">{ride.dropoffLocation}</div>
@@ -450,11 +570,11 @@ export default function RidesPage() {
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
                         {ride.status === "completed" && (
-                          <Button variant="outline" asChild>
+                          <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
                             <Link href={`/rides/${ride.id}/review`}>Leave Review</Link>
                           </Button>
                         )}
-                        <Button variant="outline" asChild>
+                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
                           <Link href={`/rides/${ride.id}`}>Details</Link>
                         </Button>
                       </div>
@@ -462,6 +582,14 @@ export default function RidesPage() {
                   </CardFooter>
                 </Card>
               ))
+            )}
+
+            {pastRides.length > 5 && (
+              <div className="text-center pt-4">
+                <Button variant="outline" className="transition-all duration-200 hover:bg-muted">
+                  Load More
+                </Button>
+              </div>
             )}
           </TabsContent>
         </div>
