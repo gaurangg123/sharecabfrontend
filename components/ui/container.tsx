@@ -6,6 +6,7 @@ interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg" | "xl" | "full"
   fluid?: boolean
   centered?: boolean
+  as?: React.ElementType
 }
 
 export function Container({
@@ -14,10 +15,11 @@ export function Container({
   size = "lg",
   fluid = false,
   centered = true,
+  as: Component = "div",
   ...props
 }: ContainerProps) {
   return (
-    <div
+    <Component
       className={cn(
         "w-full px-4 sm:px-6 lg:px-8",
         {
@@ -34,6 +36,6 @@ export function Container({
       {...props}
     >
       {children}
-    </div>
+    </Component>
   )
 }

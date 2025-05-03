@@ -24,24 +24,24 @@ export default function HomePage() {
               satisfied customers who trust us for their daily commute.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 transition-all duration-200"
-                asChild
-              >
-                <Link href="/book">
+              <Link href="/book">
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 transition-all duration-200"
+                >
                   Book a Ride
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary/10 px-8 transition-all duration-200"
-                asChild
-              >
-                <Link href="/subscription-plans">View Plans</Link>
-              </Button>
+                </Button>
+              </Link>
+              <Link href="/subscription-plans">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/10 px-8 transition-all duration-200"
+                >
+                  View Plans
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -202,16 +202,15 @@ export default function HomePage() {
           </div>
 
           <div className="text-center mt-12">
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 transition-all duration-200"
-              asChild
-            >
-              <Link href="/book">
+            <Link href="/book">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 transition-all duration-200"
+              >
                 Book Your First Ride
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -290,14 +289,15 @@ export default function HomePage() {
           </div>
 
           <div className="mt-12 text-center">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-primary text-primary hover:bg-primary/10 px-8 transition-all duration-200"
-              asChild
-            >
-              <Link href="/testimonials">Read More Reviews</Link>
-            </Button>
+            <Link href="/testimonials">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-primary text-primary hover:bg-primary/10 px-8 transition-all duration-200"
+              >
+                Read More Reviews
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -312,25 +312,25 @@ export default function HomePage() {
               and experience the difference.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-all duration-200"
-                asChild
-              >
-                <Link href="/signup">
+              <Link href="/signup">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-all duration-200"
+                >
                   Sign Up Now
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10 px-8 transition-all duration-200"
-                asChild
-              >
-                <Link href="/contact">Contact Us</Link>
-              </Button>
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10 px-8 transition-all duration-200"
+                >
+                  Contact Us
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

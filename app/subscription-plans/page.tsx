@@ -61,9 +61,9 @@ export default function SubscriptionPlansPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" asChild>
-                    <Link href="/booking">Subscribe Now</Link>
-                  </Button>
+                  <Link href="/booking" className="w-full">
+                    <Button className="w-full">Subscribe Now</Button>
+                  </Link>
                 </CardFooter>
               </Card>
 
@@ -105,9 +105,9 @@ export default function SubscriptionPlansPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" asChild>
-                    <Link href="/booking">Subscribe Now</Link>
-                  </Button>
+                  <Link href="/booking" className="w-full">
+                    <Button className="w-full">Subscribe Now</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             </div>
@@ -146,9 +146,9 @@ export default function SubscriptionPlansPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" asChild>
-                    <Link href="/booking">Subscribe Now</Link>
-                  </Button>
+                  <Link href="/booking" className="w-full">
+                    <Button className="w-full">Subscribe Now</Button>
+                  </Link>
                 </CardFooter>
               </Card>
 
@@ -190,9 +190,9 @@ export default function SubscriptionPlansPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" asChild>
-                    <Link href="/booking">Subscribe Now</Link>
-                  </Button>
+                  <Link href="/booking" className="w-full">
+                    <Button className="w-full">Subscribe Now</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             </div>
@@ -207,9 +207,9 @@ export default function SubscriptionPlansPage() {
             We offer corporate plans for businesses of all sizes. Get in touch with our team to discuss your specific
             needs.
           </p>
-          <Button size="lg" asChild>
-            <Link href="/contact">Contact Us</Link>
-          </Button>
+          <Link href="/contact">
+            <Button size="lg">Contact Us</Button>
+          </Link>
         </div>
       </div>
 

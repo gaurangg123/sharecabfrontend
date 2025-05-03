@@ -259,12 +259,14 @@ export default function RideDetailPage() {
               <Button variant="outline" size="sm" className="gap-1">
                 Emergency
               </Button>
-              <Button size="sm" className="ml-auto gap-1" asChild>
+              <div className="ml-auto">
                 <Link href="/feedback">
-                  Rate Ride
-                  <ChevronRight className="h-4 w-4" />
+                  <Button size="sm" className="gap-1">
+                    <span>Rate Ride</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </Link>
-              </Button>
+              </div>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -375,9 +377,11 @@ export default function RideDetailPage() {
               <Button variant="outline" size="sm">
                 Download Receipt
               </Button>
-              <Button size="sm" asChild>
-                <Link href="/feedback">Rate Ride</Link>
-              </Button>
+              <div>
+                <Link href="/feedback">
+                  <Button size="sm">Rate Ride</Button>
+                </Link>
+              </div>
             </CardFooter>
           </Card>
         </TabsContent>

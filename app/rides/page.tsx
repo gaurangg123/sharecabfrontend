@@ -196,9 +196,14 @@ export default function RidesPage() {
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <Button asChild className="bg-primary hover:bg-primary/90 transition-all duration-200 w-full sm:w-auto">
-          <Link href="/book">Book a New Ride</Link>
-        </Button>
+        {/* Fix 1: Wrap Link in a div and use normal Button */}
+        <div className="w-full sm:w-auto">
+          <Link href="/book">
+            <Button className="bg-primary hover:bg-primary/90 transition-all duration-200 w-full">
+              Book a New Ride
+            </Button>
+          </Link>
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <div className="relative w-full sm:w-auto">
@@ -314,9 +319,14 @@ export default function RidesPage() {
                         ? "No rides match your search criteria."
                         : "You don't have any upcoming rides scheduled."}
                     </p>
-                    <Button asChild className="mt-4 bg-primary hover:bg-primary/90 transition-all duration-200">
-                      <Link href="/book">Book a Ride</Link>
-                    </Button>
+                    {/* Fix 2: Wrap Link in a div and use normal Button */}
+                    <div className="mt-4">
+                      <Link href="/book">
+                        <Button className="bg-primary hover:bg-primary/90 transition-all duration-200">
+                          Book a Ride
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -357,9 +367,12 @@ export default function RidesPage() {
                     <div className="flex justify-between w-full">
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
-                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
-                          <Link href={`/rides/${ride.id}`}>Details</Link>
-                        </Button>
+                        {/* Fix 3: Use Link and Button separately */}
+                        <Link href={`/rides/${ride.id}`}>
+                          <Button variant="outline" className="transition-all duration-200 hover:bg-muted">
+                            Details
+                          </Button>
+                        </Link>
                         <Button
                           variant="destructive"
                           onClick={() => handleCancelRide(ride.id)}
@@ -369,7 +382,7 @@ export default function RidesPage() {
                           {cancellingRideId === ride.id ? (
                             <>
                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Cancelling...
+                              <span>Cancelling...</span>
                             </>
                           ) : (
                             "Cancel Ride"
@@ -466,12 +479,17 @@ export default function RidesPage() {
                     <div className="flex justify-between w-full">
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
-                        <Button asChild className="bg-primary hover:bg-primary/90 transition-all duration-200">
-                          <Link href={`/rides/${ride.id}/track`}>Track Ride</Link>
-                        </Button>
-                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
-                          <Link href={`/rides/${ride.id}`}>Details</Link>
-                        </Button>
+                        {/* Fix 4: Use Link and Button separately */}
+                        <Link href={`/rides/${ride.id}/track`}>
+                          <Button className="bg-primary hover:bg-primary/90 transition-all duration-200">
+                            Track Ride
+                          </Button>
+                        </Link>
+                        <Link href={`/rides/${ride.id}`}>
+                          <Button variant="outline" className="transition-all duration-200 hover:bg-muted">
+                            Details
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </CardFooter>
@@ -570,13 +588,17 @@ export default function RidesPage() {
                       <div className="font-medium">${ride.fare.toFixed(2)}</div>
                       <div className="flex gap-2">
                         {ride.status === "completed" && (
-                          <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
-                            <Link href={`/rides/${ride.id}/review`}>Leave Review</Link>
-                          </Button>
+                          <Link href={`/rides/${ride.id}/review`}>
+                            <Button variant="outline" className="transition-all duration-200 hover:bg-muted">
+                              Leave Review
+                            </Button>
+                          </Link>
                         )}
-                        <Button variant="outline" asChild className="transition-all duration-200 hover:bg-muted">
-                          <Link href={`/rides/${ride.id}`}>Details</Link>
-                        </Button>
+                        <Link href={`/rides/${ride.id}`}>
+                          <Button variant="outline" className="transition-all duration-200 hover:bg-muted">
+                            Details
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </CardFooter>
